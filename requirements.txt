@@ -1,0 +1,27 @@
+# ---------- Runtime ----------
+# Data handling
+pandas>=2.2
+numpy>=2.1
+SQLAlchemy>=2.0
+
+# Modelling
+scikit-learn>=1.6
+xgboost>=2.1
+joblib>=1.4
+
+# Data collection (football-data.co.uk CSVs, logo/player image fetching)
+requests>=2.32
+beautifulsoup4>=4.12
+lxml>=5.3
+
+# Analysis / plots
+matplotlib>=3.9
+
+# Config
+python-dotenv>=1.0
+
+# ---------- Dev ----------
+pytest>=8.3
+pytest-cov>=6.0
+ruff>=0.9
+mypy>=1.14

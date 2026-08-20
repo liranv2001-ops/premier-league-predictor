@@ -1,0 +1,31 @@
+# Tool configuration only - this project is not packaged/installed.
+# Dependencies live in requirements.txt.
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+exclude = [".venv", "frontend", "data", "assets"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "ANN"]
+ignore = ["ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+files = ["src"]
+python_version = "3.14"
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true
