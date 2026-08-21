@@ -1,0 +1,117 @@
+{
+  "generated_at": "2026-08-21T05:27:54.758554+00:00",
+  "note": "Photographs from Wikimedia Commons under free licences. Attribution is required by CC BY and CC BY-SA and is displayed in the dashboard footer.",
+  "players": {
+    "erling-haaland": {
+      "player": "Erling Haaland",
+      "club": "Manchester City",
+      "path": "assets/players/erling-haaland.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Bryan Berlin",
+      "source": "https://commons.wikimedia.org/wiki/File:Erling_Haaland_Morocco_v_Norway_7_June_2026-51.jpg",
+      "article": "https://en.wikipedia.org/wiki/Erling_Haaland"
+    },
+    "thiago": {
+      "player": "Thiago",
+      "club": "Brentford",
+      "path": "assets/players/thiago.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Bryan Berlin",
+      "source": "https://commons.wikimedia.org/wiki/File:Igor_Thiago_Brazil_V_Morocco_13_June_2026-120_(cropped).jpg",
+      "article": "https://en.wikipedia.org/wiki/Igor_Thiago"
+    },
+    "mohamed-salah": {
+      "player": "Mohamed Salah",
+      "club": "Liverpool",
+      "path": "assets/players/mohamed-salah.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Bryan Berlin",
+      "source": "https://commons.wikimedia.org/wiki/File:Mohamed_Salah_Argentina_v_Egypt_7_July_2026-163_(cropped).jpg",
+      "article": "https://en.wikipedia.org/wiki/Mohamed_Salah"
+    },
+    "ollie-watkins": {
+      "player": "Ollie Watkins",
+      "club": "Aston Villa",
+      "path": "assets/players/ollie-watkins.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Bryan Berlin",
+      "source": "https://commons.wikimedia.org/wiki/File:Ollie_Watkins_England_v_Ghana_23_June_2026-035.jpg",
+      "article": "https://en.wikipedia.org/wiki/Ollie_Watkins"
+    },
+    "hugo-ekitike": {
+      "player": "Hugo Ekitike",
+      "club": "Liverpool",
+      "path": "assets/players/hugo-ekitike.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Liondartois",
+      "source": "https://commons.wikimedia.org/wiki/File:Hugo_Ekitike_(PSG_2023)_(cropped2).jpg",
+      "article": "https://en.wikipedia.org/wiki/Hugo_Ekitike"
+    },
+    "bruno-fernandes": {
+      "player": "Bruno Fernandes",
+      "club": "Manchester United",
+      "path": "assets/players/bruno-fernandes.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Bryan Berlin",
+      "source": "https://commons.wikimedia.org/wiki/File:Bruno_Fernandes_USMNT_v_Portugal_Mar_31_2026-27_(cropped).jpg",
+      "article": "https://en.wikipedia.org/wiki/Bruno_Fernandes"
+    },
+    "morgan-rogers": {
+      "player": "Morgan Rogers",
+      "club": "Aston Villa",
+      "path": "assets/players/morgan-rogers.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Bryan Berlin",
+      "source": "https://commons.wikimedia.org/wiki/File:Morgan_Rogers_England_v_Panama_27_June_26-144_(cropped).jpg",
+      "article": "https://en.wikipedia.org/wiki/Morgan_Rogers"
+    },
+    "enzo-fernandez": {
+      "player": "Enzo Fern\u00e1ndez",
+      "club": "Chelsea",
+      "path": "assets/players/enzo-fernandez.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Bryan Berlin",
+      "source": "https://commons.wikimedia.org/wiki/File:Enzo_Fernandez_Argentina_v_Spain_19_July_2026-050_(cropped).jpg",
+      "article": "https://en.wikipedia.org/wiki/Enzo_Fern\u00e1ndez"
+    },
+    "dominik-szoboszlai": {
+      "player": "Dominik Szoboszlai",
+      "club": "Liverpool",
+      "path": "assets/players/dominik-szoboszlai.jpg",
+      "licence": "CC0",
+      "licence_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+      "author": "Timmy96",
+      "source": "https://commons.wikimedia.org/wiki/File:Dominik_Szoboszlai_04012026_(1).jpg",
+      "article": "https://en.wikipedia.org/wiki/Dominik_Szoboszlai"
+    },
+    "antoine-semenyo": {
+      "player": "Antoine Semenyo",
+      "club": "Manchester City",
+      "path": "assets/players/antoine-semenyo.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Bryan Berlin",
+      "source": "https://commons.wikimedia.org/wiki/File:Antoine_Semenyo_England_v_Ghana_23_June_2026-209_(cropped2).jpg",
+      "article": "https://en.wikipedia.org/wiki/Antoine_Semenyo"
+    },
+    "bukayo-saka": {
+      "player": "Bukayo Saka",
+      "club": "Arsenal",
+      "path": "assets/players/bukayo-saka.jpg",
+      "licence": "CC BY-SA 4.0",
+      "licence_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "author": "Bryan Berlin",
+      "source": "https://commons.wikimedia.org/wiki/File:Bukayo_Saka_England_v_Panama_27_June_26-108_(cropped).jpg",
+      "article": "https://en.wikipedia.org/wiki/Bukayo_Saka"
+    }
+  },
+  "placeholders": []
+}

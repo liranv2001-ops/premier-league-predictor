@@ -1,0 +1,35 @@
+# Premier League 2026/27 - the 20 competing clubs.
+#
+# This is a fact about the world that the pipeline cannot derive: our data ends with
+# the 2025/26 season, and no source had published anything for 2026/27 as of the season
+# opener. The three promoted clubs were supplied by the user.
+#
+# Relegated from 2025/26: West Ham, Wolves, Burnley
+#   (independently derived from our own data as the bottom three - it agrees.)
+# Promoted from the Championship: Coventry, Hull City, Ipswich
+#
+# Used by: python -m src.models.cli --season 2026/27 --teams-file data/seasons/2026-27.txt
+
+# --- 17 clubs carried over from 2025/26 ---
+Arsenal
+Aston Villa
+Bournemouth
+Brentford
+Brighton
+Chelsea
+Crystal Palace
+Everton
+Fulham
+Leeds
+Liverpool
+Man City
+Man United
+Newcastle
+Nott'm Forest
+Sunderland
+Tottenham
+
+# --- 3 promoted clubs ---
+Coventry
+Hull City
+Ipswich

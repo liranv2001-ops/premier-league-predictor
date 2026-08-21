@@ -1,1 +1,136 @@
 @import "tailwindcss";
+
+/*
+ * Palette from the dataviz skill's reference instance.
+ *
+ * Only three colours carry meaning: categorical slot 1 (blue) for every probability
+ * mark, status-critical (red) for the relegation zone, and the ink/surface scale.
+ * Green is deliberately absent - red vs green fails CVD separation at ΔE 4.1 under
+ * deuteranopia, so the Champions League zone is marked with a rule and a label rather
+ * than a colour that a red/green reader cannot separate from relegation.
+ *
+ * Validated with scripts/validate_palette.js in both modes:
+ *   light #2a78d6,#d03b3b on #fcfcfb  -> ALL CHECKS PASS (worst CVD ΔE 23.8)
+ *   dark  #3987e5,#d03b3b on #1a1a19  -> ALL CHECKS PASS (worst CVD ΔE 25.7)
+ *
+ * Dark values are declared under both the media query (OS setting) and the
+ * data-theme scope (viewer's toggle), so the toggle wins in both directions.
+ */
+
+:root {
+  color-scheme: light;
+
+  --surface-1: #fcfcfb;
+  --surface-2: #f9f9f7;
+  --page: #f4f4f1;
+
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+
+  --gridline: #e1e0d9;
+  --baseline: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.1);
+
+  --series-1: #2a78d6;
+  --series-1-soft: rgba(42, 120, 214, 0.22);
+  --critical: #d03b3b;
+
+  --shadow-card: 0 1px 2px rgba(11, 11, 11, 0.06), 0 8px 24px rgba(11, 11, 11, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+
+    --surface-1: #1a1a19;
+    --surface-2: #141413;
+    --page: #0d0d0d;
+
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+
+    --gridline: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255, 255, 255, 0.1);
+
+    --series-1: #3987e5;
+    --series-1-soft: rgba(57, 135, 229, 0.26);
+    --critical: #d03b3b;
+
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --surface-1: #1a1a19;
+  --surface-2: #141413;
+  --page: #0d0d0d;
+
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #898781;
+
+  --gridline: #2c2c2a;
+  --baseline: #383835;
+  --border: rgba(255, 255, 255, 0.1);
+
+  --series-1: #3987e5;
+  --series-1-soft: rgba(57, 135, 229, 0.26);
+  --critical: #d03b3b;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Expose the roles to Tailwind's utility layer. */
+@theme inline {
+  --color-surface: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-page: var(--page);
+  --color-ink: var(--text-primary);
+  --color-ink-2: var(--text-secondary);
+  --color-ink-muted: var(--text-muted);
+  --color-gridline: var(--gridline);
+  --color-baseline: var(--baseline);
+  --color-hairline: var(--border);
+  --color-series: var(--series-1);
+  --color-series-soft: var(--series-1-soft);
+  --color-critical: var(--critical);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  background: var(--page);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* The page itself must never scroll sideways; wide content scrolls in its own box. */
+  overflow-x: hidden;
+}
+
+/* Hero and stat values use proportional figures - tabular-nums makes a large
+   standalone number look loose. Tabular is reserved for table columns below. */
+.hero-figure {
+  font-variant-numeric: proportional-nums;
+  letter-spacing: -0.02em;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,78 @@
+name: Weekly prediction refresh
+
+# Re-runs the table prediction as results come in and commits the updated JSON.
+#
+# Deliberately does NOT run the per-match player collector. That is one request per
+# match - roughly 2,280 for six seasons - against a free, undocumented Understat
+# endpoint. Running it weekly from a CI runner would be abusive for data that barely
+# changes, so the individual awards are refreshed locally instead. The league table is
+# what actually moves week to week.
+
+on:
+  schedule:
+    # Monday 06:00 UTC, after the weekend's matches have been published.
+    - cron: "0 6 * * MON"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-predictions
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      # Matches the local constraint; OpenBLAS over-subscribes threads on small runners.
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      PYTHONPATH: ${{ github.workspace }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # The HTTP cache makes reruns cheap and keeps request volume at the sources low.
+      # Keyed by week so a stale entry cannot pin the results forever.
+      - name: Restore HTTP cache
+        uses: actions/cache@v4
+        with:
+          path: data/raw/.cache
+          key: http-cache-${{ github.run_id }}
+          restore-keys: http-cache-
+
+      - name: Collect results
+        run: python -m src.data_collection.cli --seasons 6
+
+      - name: Build team features
+        run: python -m src.features.cli --only team
+
+      - name: Simulate the season
+        run: |
+          python -m src.models.cli \
+            --season "2026/27" \
+            --teams-file data/seasons/2026-27.txt
+
+      - name: Commit the updated prediction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # --quiet exits non-zero when there is nothing staged, which is the common
+          # case mid-week; treat that as success rather than filling history with
+          # empty commits.
+          git add data/processed/predictions.json
+          if git diff --cached --quiet; then
+            echo "Prediction unchanged - nothing to commit."
+          else
+            git commit -m "Refresh 2026/27 prediction [skip ci]"
+            git push
+          fi

@@ -1,91 +1,141 @@
-/**
- * Placeholder dashboard shell.
- *
- * Real data will be loaded from `/predictions.json`, written by the Python
- * pipeline into `frontend/public/`. See CLAUDE.md -> "Data contract".
- */
+import { useEffect, useState } from "react";
+import AssumptionsBanner from "./components/AssumptionsBanner";
+import AwardCard, { formatters } from "./components/AwardCard";
+import ChampionCard from "./components/ChampionCard";
+import LeagueTable from "./components/LeagueTable";
+import ThemeToggle from "./components/ThemeToggle";
+import Credits from "./components/Credits";
+import {
+  loadLogoMapping,
+  loadPlayerMapping,
+  type LogoMapping,
+  type PlayerMapping,
+} from "./lib/assets";
+import { loadPredictions, type Predictions } from "./lib/predictions";
 
-const TEAMS = [
-  'Arsenal',
-  'Aston Villa',
-  'Bournemouth',
-  'Brentford',
-  'Brighton',
-  'Burnley',
-  'Chelsea',
-  'Crystal Palace',
-  'Everton',
-  'Fulham',
-  'Leeds United',
-  'Liverpool',
-  'Manchester City',
-  'Manchester United',
-  'Newcastle United',
-  "Nott'm Forest",
-  'Sunderland',
-  'Tottenham',
-  'West Ham',
-  'Wolves',
-]
-
-const AWARDS = [
-  { label: 'Champion', icon: '🏆' },
-  { label: 'Top Scorer', icon: '⚽' },
-  { label: 'Top Assists', icon: '🅰️' },
-  { label: 'Player of the Season', icon: '⭐' },
-]
-
-function App() {
+function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <header className="border-b border-slate-800 bg-slate-900/60">
-        <div className="mx-auto max-w-5xl px-6 py-8">
-          <h1 className="text-3xl font-bold tracking-tight">Premier League Predictor</h1>
-          <p className="mt-1 text-sm text-slate-400">
-            Predicted final table — awaiting model output
-          </p>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-5xl px-6 py-10">
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {AWARDS.map((award) => (
-            <div
-              key={award.label}
-              className="rounded-lg border border-slate-800 bg-slate-900 p-4"
-            >
-              <div className="text-2xl">{award.icon}</div>
-              <div className="mt-2 text-xs uppercase tracking-wide text-slate-500">
-                {award.label}
-              </div>
-              <div className="mt-1 text-lg font-semibold text-slate-600">TBD</div>
-            </div>
-          ))}
-        </section>
-
-        <section className="mt-10 overflow-x-auto rounded-lg border border-slate-800">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-slate-900 text-xs uppercase tracking-wide text-slate-500">
-              <tr>
-                <th className="px-4 py-3 font-medium">#</th>
-                <th className="px-4 py-3 font-medium">Team</th>
-                <th className="px-4 py-3 text-right font-medium">Pts</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800">
-              {TEAMS.map((team, i) => (
-                <tr key={team} className="hover:bg-slate-900/50">
-                  <td className="px-4 py-2.5 tabular-nums text-slate-500">{i + 1}</td>
-                  <td className="px-4 py-2.5 font-medium">{team}</td>
-                  <td className="px-4 py-2.5 text-right tabular-nums text-slate-600">—</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      </main>
+    <div className="min-h-screen" style={{ background: "var(--page)" }}>
+      <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">{children}</div>
     </div>
-  )
+  );
 }
 
-export default App
+export default function App() {
+  const [predictions, setPredictions] = useState<Predictions | null>(null);
+  const [photos, setPhotos] = useState<PlayerMapping | null>(null);
+  const [logos, setLogos] = useState<LogoMapping | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadPredictions()
+      .then(setPredictions)
+      .catch((cause: unknown) => setError(cause instanceof Error ? cause.message : String(cause)));
+    // Mappings are optional: the dashboard still renders before the asset pipeline has
+    // ever run, falling back to the placeholder and then the monogram.
+    void loadPlayerMapping().then(setPhotos);
+    void loadLogoMapping().then(setLogos);
+  }, []);
+
+  if (error) {
+    return (
+      <Shell>
+        <div
+          className="rounded-xl p-5"
+          style={{ background: "var(--surface-1)", border: "1px solid var(--critical)" }}
+        >
+          <h1 className="text-lg font-bold" style={{ color: "var(--critical)" }}>
+            Could not load predictions
+          </h1>
+          <p className="mt-2 text-sm break-words" style={{ color: "var(--text-secondary)" }}>
+            {error}
+          </p>
+        </div>
+      </Shell>
+    );
+  }
+
+  if (!predictions) {
+    return (
+      <Shell>
+        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+          Loading predictions…
+        </p>
+      </Shell>
+    );
+  }
+
+  const generated = new Date(predictions.generated_at).toLocaleDateString(undefined, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+
+  return (
+    <Shell>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1
+            className="text-2xl font-bold tracking-tight sm:text-3xl"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Premier League Predictor
+          </h1>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-secondary)" }}>
+            {predictions.season} season forecast · {predictions.n_simulations.toLocaleString()}{" "}
+            simulations · generated {generated}
+          </p>
+        </div>
+        <ThemeToggle />
+      </header>
+
+      <main className="mt-6 space-y-6">
+        <AssumptionsBanner assumptions={predictions.assumptions} />
+
+        <ChampionCard predictions={predictions} />
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <AwardCard
+            title="Top scorer"
+            award={predictions.top_scorer}
+            stat={formatters.goals}
+            secondary={formatters.probability}
+            photos={photos}
+          />
+          <AwardCard
+            title="Top assists"
+            award={predictions.top_assists}
+            stat={formatters.assists}
+            secondary={formatters.probability}
+            photos={photos}
+          />
+          <AwardCard
+            title="Player of the season"
+            award={predictions.player_of_the_season}
+            stat={formatters.score}
+            secondary={formatters.ratingValue}
+            photos={photos}
+          />
+        </div>
+
+        <LeagueTable table={predictions.table} />
+      </main>
+
+      <footer
+        className="mt-8 border-t pt-5 text-xs"
+        style={{ borderColor: "var(--border)", color: "var(--text-muted)" }}
+      >
+        <p>
+          Dixon-Coles match model with Monte Carlo season simulation; XGBoost regressors for the
+          individual awards. Model {predictions.model_version}.
+        </p>
+        <p className="mt-1">
+          Match data from football-data.co.uk, player data from Understat. Player photographs from
+          Wikimedia Commons under free licences; club badges generated by this project and not
+          official crests.
+        </p>
+        <Credits players={photos} logos={logos} />
+      </footer>
+    </Shell>
+  );
+}

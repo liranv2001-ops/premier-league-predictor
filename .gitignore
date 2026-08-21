@@ -42,6 +42,12 @@ data/raw/*
 data/processed/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
+
+# The prediction itself IS committed. It is the project's output, it is small and
+# human-readable, and the weekly workflow updates it in place - a public repo where the
+# current prediction is invisible would be missing the point. Databases, CSVs and the
+# frontend's published copy all stay ignored.
+!data/processed/predictions.json
 *.db
 *.sqlite
 *.sqlite3
@@ -58,6 +64,22 @@ assets/logos/*
 assets/players/*
 !assets/logos/.gitkeep
 !assets/players/.gitkeep
+
+# The mapping files ARE committed. They are the attribution record: CC BY-SA and CC BY
+# require credit, so the licence, author and source for every photo must survive in
+# version control even though the photos themselves do not. The placeholder is ours and
+# is committed so the fallback works on a fresh clone with no network.
+!assets/logos/mapping.json
+!assets/players/mapping.json
+!assets/players/_placeholder.svg
+
+# Dashboard assets and payload - all reproducible from the pipeline, so the repo
+# carries the code that fetches them rather than the binaries themselves.
+frontend/public/logos/
+frontend/public/players/
+frontend/public/predictions.json
+frontend/public/logos-mapping.json
+frontend/public/players-mapping.json
 
 # ---------- Secrets ----------
 .env
