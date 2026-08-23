@@ -11,8 +11,9 @@ import json
 
 import pandas as pd
 import pytest
+from requests import ConnectTimeout
 
-from src.data_collection import thesportsdb, wikimedia
+from src.data_collection import football_data_uk, thesportsdb, understat, wikimedia
 from src.data_collection.storage import read_table, write_table
 from src.data_collection.understat import (
     UnderstatFormatError,
@@ -124,7 +125,33 @@ def test_parse_match_rosters_fills_missing_fields_with_zero():
 # ----------------------------------------------------------------------------------
 
 
-def _league_payload(ppda_def: int = 24, is_result: bool = True) -> str:
+def _league_payload(ppda_def: int = 24, is_result: bool = True, with_players: bool = False) -> str:
+    players = (
+        [
+            {
+                "id": "1",
+                "player_name": "Someone",
+                "team_title": "Arsenal",
+                "position": "FW",
+                "games": "10",
+                "time": "900",
+                "goals": "5",
+                "assists": "2",
+                "shots": "20",
+                "key_passes": "8",
+                "yellow_cards": "1",
+                "red_cards": "0",
+                "npg": "4",
+                "xG": "4.5",
+                "xA": "1.8",
+                "npxG": "3.9",
+                "xGChain": "6.0",
+                "xGBuildup": "2.0",
+            }
+        ]
+        if with_players
+        else []
+    )
     history_entry = {
         "h_a": "h",
         "xG": "1.8",
@@ -149,7 +176,7 @@ def _league_payload(ppda_def: int = 24, is_result: bool = True) -> str:
                 "1": {"id": "1", "title": "Arsenal", "history": [history_entry]},
                 "2": {"id": "2", "title": "Chelsea", "history": [history_entry]},
             },
-            "players": [],
+            "players": players,
             "dates": [
                 {
                     "id": "26602",
@@ -213,6 +240,13 @@ def test_league_parsers_reject_non_json(parser):
 # ----------------------------------------------------------------------------------
 # thesportsdb: the sport and club guards
 # ----------------------------------------------------------------------------------
+
+
+SAMPLE_CSV = (
+    "Div,Date,Time,HomeTeam,AwayTeam,FTHG,FTAG,FTR,HTHG,HTAG,HTR,HS,AS\n"
+    "E0,16/08/2025,12:30,Man United,Nott'm Forest,2,1,H,1,0,H,14,8\n"
+    "E0,16/08/2025,15:00,Wolves,Man City,0,3,A,0,1,A,6,19\n"
+)
 
 
 def _teams_response(*teams: dict[str, str]) -> str:
@@ -354,6 +388,69 @@ def test_article_lookup_returns_none_when_there_is_no_lead_image():
         {"titles": json.dumps({"query": {"pages": {"1": {"title": "Someone", "extract": "x"}}}})}
     )
     assert wikimedia.find_article_image(session, "Someone", "Arsenal") is None
+
+
+# ----------------------------------------------------------------------------------
+# Network tolerance on the in-progress season
+# ----------------------------------------------------------------------------------
+
+
+class FlakySession:
+    """Serves cached bodies but raises a network error for one season."""
+
+    def __init__(self, fails_on: str, body: str) -> None:
+        self.fails_on = fails_on
+        self.body = body
+
+    def get_text(self, url: str, **_kwargs: object) -> str:
+        if self.fails_on in url:
+            raise ConnectTimeout("connection timed out")
+        return self.body
+
+
+def test_understat_survives_a_network_failure_on_the_current_season(monkeypatch):
+    """Completed seasons never expire from cache, so only the live season needs the net.
+
+    Losing an otherwise fully cached run because of one blip on a season that is
+    expected to be empty anyway is the wrong trade - and it would fail the weekly
+    workflow for no reason.
+    """
+    monkeypatch.setattr(understat, "current_season_start_year", lambda: 2026)
+    session = FlakySession("EPL/2026", _league_payload(with_players=True))
+
+    league = understat.collect_league_data(session, [2024, 2026])
+
+    assert not league.players.empty, "the cached season should still have been parsed"
+    assert set(league.players["season"]) == {"2024/25"}
+
+
+def test_understat_still_fails_on_a_completed_season(monkeypatch):
+    """A historical season must be in cache; a network error there is a real failure."""
+    monkeypatch.setattr(understat, "current_season_start_year", lambda: 2026)
+    session = FlakySession("EPL/2024", _league_payload(with_players=True))
+
+    with pytest.raises(ConnectTimeout):
+        understat.collect_league_data(session, [2024])
+
+
+def test_football_data_survives_a_network_failure_on_the_current_season(monkeypatch, tmp_path):
+    monkeypatch.setattr(football_data_uk, "FOOTBALL_DATA_UK_DIR", tmp_path)
+    monkeypatch.setattr(football_data_uk, "current_season_start_year", lambda: 2026)
+
+    session = FlakySession("2627", SAMPLE_CSV)
+    df = football_data_uk.collect_matches(session, [2025, 2026])
+
+    assert len(df) == 2
+    assert set(df["season"]) == {"2025/26"}
+
+
+def test_football_data_still_fails_on_a_completed_season(monkeypatch, tmp_path):
+    monkeypatch.setattr(football_data_uk, "FOOTBALL_DATA_UK_DIR", tmp_path)
+    monkeypatch.setattr(football_data_uk, "current_season_start_year", lambda: 2026)
+
+    session = FlakySession("2223", SAMPLE_CSV)
+    with pytest.raises(ConnectTimeout):
+        football_data_uk.collect_matches(session, [2022])
 
 
 # ----------------------------------------------------------------------------------

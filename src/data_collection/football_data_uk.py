@@ -10,6 +10,7 @@ import io
 import logging
 
 import pandas as pd
+from requests import RequestException
 
 from src.data_collection.config import (
     CURRENT_SEASON_TTL_SECONDS,
@@ -137,6 +138,18 @@ def collect_matches(
                     "No results file yet for %s - the season has not started or no "
                     "matches have been played.",
                     season_label(year),
+                )
+                continue
+            raise
+        except RequestException as exc:
+            # Completed seasons never expire from the cache, so only the in-progress
+            # season needs the network. A transient blip there must not throw away a run
+            # that is otherwise fully cached.
+            if year >= current:
+                logger.warning(
+                    "Could not reach football-data.co.uk for %s (%s) - continuing without it.",
+                    season_label(year),
+                    exc.__class__.__name__,
                 )
                 continue
             raise

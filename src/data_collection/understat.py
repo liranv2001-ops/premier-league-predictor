@@ -16,6 +16,7 @@ import logging
 from typing import NamedTuple
 
 import pandas as pd
+from requests import RequestException
 
 from src.data_collection.config import (
     CURRENT_SEASON_TTL_SECONDS,
@@ -331,6 +332,20 @@ def collect_league_data(
                 logger.warning(
                     "No Understat data yet for %s - the season has barely started.",
                     season_label(year),
+                )
+                continue
+            raise
+        except RequestException as exc:
+            # Completed seasons are cached with no expiry, so only the in-progress season
+            # ever needs the network. Losing a run that is otherwise entirely served from
+            # cache - and whose current season is expected to be empty anyway - because
+            # of one transient blip is the wrong trade, and it would make the weekly
+            # workflow fail for no reason.
+            if year >= current:
+                logger.warning(
+                    "Could not reach Understat for %s (%s) - continuing without it.",
+                    season_label(year),
+                    exc.__class__.__name__,
                 )
                 continue
             raise
