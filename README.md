@@ -5,10 +5,10 @@ whole season — then shows it in a static React dashboard. A Dixon-Coles scorel
 produces expected goals for every fixture; 10,000 Monte Carlo seasons turn those into a
 distribution over final positions rather than a single guess.
 
-![Dashboard](docs/screenshot.png)
-
-> **Screenshot not committed yet.** Run `npm run dev --prefix frontend`, capture the
-> page, and save it as `docs/screenshot.png`. Until then the image above will 404.
+The dashboard shows the full predicted table with each club's title probability and its
+80% finish range, a hero card for the predicted champion, and three award cards with
+player photos. Run it locally with `npm run dev --prefix frontend` — see
+[Quickstart](#quickstart).
 
 ---
 
